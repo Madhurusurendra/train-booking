@@ -1,0 +1,53 @@
+name: CI pipeline to build Java code
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # 2. Setup JDK
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Validate Maven
+      - name: Validate with Maven
+        run: mvn validate
+
+      # 4. Compile Java code
+      - name: Compile with Maven
+        run: mvn compile
+
+      # 5. Test Java code
+      - name: Test with Maven
+        run: mvn test
+
+      # 6. Build WAR file
+      - name: Package with Maven
+        run: mvn clean package -DskipTests
+
+      # 7. Verify WAR file
+      - name: Verify WAR file
+        run: |
+          echo "Checking WAR file..."
+          ls -lh target/
+          find target -maxdepth 1 -name "*.war"
+      # 8. Deploy WAR to Tomcat
+      - name: Deploy WAR to Tomcat
+        run: |
+          echo "Deploying application to Tomcat..."
+          curl -v -u "${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }}" \
+           -T target/TrainBook-1.0.0-SNAPSHOT.war \
+           "${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/TrainBook&update=true"
