@@ -38,17 +38,29 @@ jobs:
       - name: Package with Maven
         run: mvn clean package -DskipTests
 
-      # 7. Verify WAR file
-      - name: Verify WAR file
-        run: |
-          echo "Checking WAR file..."
-          ls -lh target/
-          find target -maxdepth 1 -name "*.war"
-      # 8. Deploy WAR to Tomcat
       - name: Deploy WAR to Tomcat
+        env:
+          TOMCAT_HOST: ${{ secrets.TOMCAT_HOST }}
+          TOMCAT_USER: ${{ secrets.TOMCAT_USER }}
+          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
         run: |
+          set -e
+
           echo "Deploying application to Tomcat..."
 
-          curl -v -u "${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }}" \
-           -T target/TrainBook-1.0.0-SNAPSHOT.war \
-           "${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/TrainBook&update=true"
+          if [ -z "$TOMCAT_HOST" ]; then
+            echo "ERROR: TOMCAT_HOST secret is missing"
+            exit 1
+          fi
+
+          WAR_FILE=$(find target -maxdepth 1 -name "*.war" -print -quit)
+
+          if [ -z "$WAR_FILE" ]; then
+            echo "ERROR: WAR file not found"
+            exit 1
+          fi
+
+          curl --fail --show-error \
+            -u "$TOMCAT_USER:$TOMCAT_PASSWORD" \
+            -T "$WAR_FILE" \
+            "$TOMCAT_HOST/manager/text/deploy?path=/TrainBook&update=true"
