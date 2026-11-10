@@ -37,8 +37,9 @@ The project uses four environments:
 8. Connect to the instance using EC2 Instance Connect.
 
 **Screenshot – DEV EC2 instance**
+<img width="1919" height="505" alt="Screenshot 2026-11-08 213720" src="https://github.com/user-attachments/assets/75376fdd-fd8f-40a7-be7f-fc23dab2794f" />
 
-![Java and Maven installation screenshot](screenshots/page-02-screenshot-01.jpeg)
+
 
 ## 4. Java and Maven Installation
 
@@ -54,8 +55,9 @@ mvn -version
 ```
 
 **Screenshot – Java and Maven installation**
+<img width="1124" height="354" alt="Screenshot 2026-11-08 214343" src="https://github.com/user-attachments/assets/52e8e1c6-21d3-4d13-aa3a-b8a808dd3774" />
 
-![Java and Maven installation](screenshots/page-02-screenshot-01.jpeg)
+
 
 ## 5. Apache Tomcat 9 Installation and Configuration
 
@@ -125,10 +127,10 @@ Verify that the Tomcat welcome page appears, then test the Manager application u
 **Security note:** Keep Tomcat Manager access restricted to trusted IP addresses. Do not expose the Manager application or credentials publicly.
 
 **Screenshots – Tomcat installation and Manager**
+<img width="1911" height="967" alt="Screenshot 2026-11-08 224210" src="https://github.com/user-attachments/assets/62b9d963-c008-4107-ae91-a2bbaa6570b5" />
+<img width="1912" height="960" alt="Screenshot 2026-11-09 125807" src="https://github.com/user-attachments/assets/0960bc9f-5869-4f13-b7a8-48d93dcdc61f" />
 
-![Tomcat download or installation](screenshots/page-03-screenshot-01.png)
-![Tomcat welcome page and Manager](screenshots/page-06-screenshot-01.jpeg)
-![Tomcat welcome page and Manager](screenshots/page-06-screenshot-02.png)
+
 
 ## 6. Create an AMI from the DEV Server
 
@@ -142,7 +144,8 @@ The AMI is intended to contain the configured server environment, including Java
 
 **Screenshot – AMI creation**
 
-![AMI creation](screenshots/page-07-screenshot-01.png)
+<img width="1900" height="510" alt="Screenshot 2026-11-09 134733" src="https://github.com/user-attachments/assets/aacee428-c978-4e9a-8dbb-a544bdee59e1" />
+
 
 ## 7. Launch TEST, PRE-PROD and PROD Instances
 
@@ -162,8 +165,8 @@ The AMI is intended to contain the configured server environment, including Java
 
 **Screenshots – Additional EC2 instances and verification**
 
-![EC2 instances](screenshots/page-08-screenshot-01.png)
-![GitHub secrets page shown in source PDF](screenshots/page-09-screenshot-01.png)
+<img width="1919" height="555" alt="Screenshot 2026-11-09 134813" src="https://github.com/user-attachments/assets/6914bf67-2390-4a70-b0e2-16d45a2815cd" />
+
 
 ## 8. Configure GitHub Secrets
 
@@ -186,6 +189,9 @@ Create four environments under **Settings → Environments**:
 - `PRE-PROD`
 - `PROD`
 
+   <img width="1631" height="535" alt="Screenshot 2026-11-09 124555" src="https://github.com/user-attachments/assets/91ffe91c-3555-4411-bb26-871e02b83e5a" />
+
+
 Add the appropriate environment-specific secrets to each environment. The `TOMCAT_HOST` value should point to the relevant EC2 server, for example:
 
 ```text
@@ -194,8 +200,10 @@ http://EC2-PUBLIC-IP:8080
 
 **Screenshots – GitHub environments and secrets**
 
-![GitHub environment and secrets configuration](screenshots/page-10-screenshot-01.png)
-![GitHub environment and secrets configuration](screenshots/page-10-screenshot-02.jpeg)
+<img width="1918" height="868" alt="Screenshot 2026-11-09 132428" src="https://github.com/user-attachments/assets/885b1b9c-0884-4945-9fca-3fa36af072fa" />
+<img width="1905" height="742" alt="Screenshot 2026-11-09 132508" src="https://github.com/user-attachments/assets/2bb6e47c-fbac-4735-a45a-f782cd54d6b4" />
+
+
 
 ## 10. Create the GitHub Actions Workflow
 
@@ -233,9 +241,10 @@ git push origin main
 Open the repository's **Actions** tab, select the CI/CD workflow run, and inspect the Build and deployment jobs.
 
 **Screenshot – GitHub Actions workflow**
+<img width="1901" height="749" alt="Screenshot 2026-11-09 124627" src="https://github.com/user-attachments/assets/9c9c0ab5-23ab-4f51-903f-0c9f404fca90" />
+<img width="1912" height="860" alt="Screenshot 2026-11-09 140238" src="https://github.com/user-attachments/assets/cde94015-75b3-42f1-98e8-502125204283" />
 
-![GitHub Actions workflow](screenshots/page-10-screenshot-01.png)
-![GitHub Actions workflow](screenshots/page-10-screenshot-02.jpeg)
+
 
 ## 12. Application Deployment Verification
 
@@ -251,20 +260,7 @@ After deployment, open each environment's Tomcat URL and verify that the applica
 Replace each placeholder with the corresponding server's public IP address.
 
 **Screenshots – Application verification**
-
-![Application verification – page 15](screenshots/page-15-screenshot-01.png)
-![Application verification – page 16](screenshots/page-16-screenshot-01.jpeg)
-![Application verification – page 17](screenshots/page-17-screenshot-01.jpeg)
-![Application verification – page 18](screenshots/page-18-screenshot-01.jpeg)
-
-## 13. Important Notes
-
-- This README is converted from the supplied 19-page PDF. Its steps describe the project; they are not independent proof that every deployment step completed successfully.
-- The source PDF specifies **Java 17** and the **`main`** branch. Your actual environment may use different Java versions or branch names; update the instructions to match your implementation.
-- The source workflow uses Tomcat Manager credentials and the `/TrainBook` context path. Confirm that these match the actual WAR file and application.
-- Keep Tomcat Manager access restricted to trusted sources.
-- Do not commit private keys, passwords, tokens or other secrets to GitHub.
-
-## 14. Screenshots
-
-All extracted screenshots are stored in the [`screenshots`](screenshots/) folder in this repository.
+<img width="1915" height="970" alt="Screenshot 2026-11-09 134546" src="https://github.com/user-attachments/assets/404a493d-f0d5-45c7-80d7-cd4afe0ec2f7" />
+<img width="1916" height="967" alt="Screenshot 2026-11-09 134532" src="https://github.com/user-attachments/assets/bd679f04-782d-4595-aa48-7ed196756339" />
+<img width="1917" height="973" alt="Screenshot 2026-11-09 134514" src="https://github.com/user-attachments/assets/d57c3393-e8c9-4434-a3e4-9618902882bb" />
+<img width="1917" height="961" alt="Screenshot 2026-11-09 134453" src="https://github.com/user-attachments/assets/a80dcebe-8a54-4f3d-a7a4-d8ca74cb69fb" />
