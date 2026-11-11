@@ -32,7 +32,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: http://3.239.2.175:9000
         run: |
-          mvn -B clean verify sonar:sonar \
+          mvn -B clean verify \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar \
             -Dsonar.projectKey=train-booking \
             -Dsonar.projectName="Train Booking" \
             -Dsonar.host.url=$SONAR_HOST_URL \
