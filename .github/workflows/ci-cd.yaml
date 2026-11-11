@@ -1,0 +1,55 @@
+
+name: Train Booking CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Download source code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Configure Java and Maven
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          server-id: maven2-releases
+          server-username: NEXUS_USERNAME
+          server-password: NEXUS_PASSWORD
+
+      # 3. Build and analyze using SonarQube
+      - name: Build and SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: http://3.239.2.175:9000
+        run: |
+          mvn -B clean verify sonar:sonar \
+            -Dsonar.projectKey=train-booking \
+            -Dsonar.projectName="Train Booking" \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.token=$SONAR_TOKEN
+
+      # 4. Upload artifact to Nexus
+      - name: Deploy to Nexus
+        run: mvn -B deploy -DskipTests
+
+      # 5. Deploy WAR file to Tomcat
+      - name: Deploy to Tomcat
+        env:
+          TOMCAT_USERNAME: ${{ secrets.TOMCAT_USERNAME }}
+          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
+          TOMCAT_MANAGER_URL: ${{ secrets.TOMCAT_MANAGER_URL }}
+        run: |
+          curl --fail --show-error \
+            --user "$TOMCAT_USERNAME:$TOMCAT_PASSWORD" \
+            --upload-file target/TrainBook-1.0.0.war \
+            "$TOMCAT_MANAGER_URL/deploy?path=/TrainBook&update=true"
