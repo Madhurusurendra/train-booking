@@ -1,0 +1,78 @@
+name: Train Ticket Reservation CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-analyze-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build and test
+        run: mvn -B clean test
+
+      - name: Package WAR
+        run: |
+          mvn -B package -DskipTests
+          test -f target/TrainBook-1.0.0-SNAPSHOT.war
+      - name: SonarQube analysis
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=train-ticket-reservation \
+            -Dsonar.host.url="$SONAR_HOST_URL" \
+            -Dsonar.token="$SONAR_TOKEN"
+      - name: Upload WAR to Nexus
+        env:
+          NEXUS_URL: ${{ secrets.NEXUS_URL }}
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>nexus-snapshots</id>
+                <username>${NEXUS_USERNAME}</username>
+                <password>${NEXUS_PASSWORD}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+          mvn -B org.apache.maven.plugins:maven-deploy-plugin:3.1.3:deploy-file \
+            -Dfile=target/TrainBook-1.0.0-SNAPSHOT.war \
+            -DgroupId=TrainBook \
+            -DartifactId=TrainBook \
+            -Dversion=1.0.0-SNAPSHOT \
+            -Dpackaging=war \
+            -DrepositoryId=nexus-snapshots \
+            -Durl="${NEXUS_URL}/repository/maven-snapshots/" \
+            -DgeneratePom=true
+      - name: Deploy WAR to Tomcat
+        env:
+          TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
+          TOMCAT_USER: ${{ secrets.TOMCAT_USER }}
+          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
+        run: |
+          curl --fail --silent --show-error \
+            --user "$TOMCAT_USER:$TOMCAT_PASSWORD" \
+            --upload-file target/TrainBook-1.0.0-SNAPSHOT.war \
+            "${TOMCAT_URL}/manager/text/deploy?path=/TrainBook&update=true"
