@@ -86,14 +86,4 @@
 			<version>3.1.0</version>
 		</dependency>
 	</dependencies>
-
-    <distributionManagement>
-       <repository>
-         <id>maven2-releases</id>
-         <name>Nexus Maven Releases</name>
-         <url>http://3.239.2.175:8081/repository/maven2-releases/</url>
-       </repository>
-    </distributionManagement>
-
 </project>
-
